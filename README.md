@@ -25,3 +25,5 @@ The project is structured as it follows :
 - [ ] Add multiplayer
 - [ ] Add bonuses (Speed boost for example)
 - [ ] Add obstacles in map
+- [ ] Add Leaderboard
+- [ ] 🥚?
