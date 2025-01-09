@@ -6,7 +6,7 @@ A simple 2 players Tron game made in Scala.
 **For player 2 :** `IJKL` or `↑ ← → ↓` to move
 
 ## TODO
-- [ ] Add a head for player
+- [x] Add a head for player
 - [x] Add a replay option
 - [x] Add comment
 

@@ -6,11 +6,11 @@ import javax.annotation.processing.Messager
 
 object Game extends App {
   // Game settings
-  val dimGrid: Int = 20 // Size of the grid
-  val sizeMult: Int = 20 // Size multiplier for display
+  val dimGrid: Int = 50 // Size of the grid
+  val sizeMult: Int = 15 // Size multiplier for display
   val fps: Int = 120 // Number of Frames per second generated
-  val speed: Int = 500 // Speed of the game
-  val showGrid: Boolean = true // Tells if the game should render the game grid
+  val speed: Int = 100 // Speed of the game
+  val showGrid: Boolean = false // Tells if the game should render the game grid
 
   var p1: Player = new Player(0, 0) // Player 1
   var p2: Player = new Player(dimGrid - 1, dimGrid - 1) // Player 2
@@ -100,11 +100,21 @@ object Game extends App {
         for (c <- a(0).indices) {
           if (a(l)(c) == 1) {
             display.setColor(cP1)
-            display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+            if (l == p1.getPosY() && c == p1.getPosX()) {
+              display.drawFilledCircle(c * sizeMult, l * sizeMult, sizeMult)
+            }
+            else {
+              display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+            }
           }
           else if (a(l)(c) == 2) {
             display.setColor(cP2)
-            display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+            if (l == p2.getPosY() && c == p2.getPosX()) {
+              display.drawFilledCircle(c * sizeMult, l * sizeMult, sizeMult)
+            }
+            else {
+              display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+            }
           }
           else if (a(l)(c) == 3) {
             display.setColor(Color.ORANGE)
@@ -155,23 +165,25 @@ object Game extends App {
 
       grid = updateGrid(p1, p2, grid)
 
-      updateDisplay(grid, colorP1, colorP2)
+      if (isPlaying) {
+        updateDisplay(grid, colorP1, colorP2)
 
-      display.syncGameLogic(fps)
-      Thread.sleep(speed)
+        display.syncGameLogic(fps)
+        Thread.sleep(speed)
 
-      directionP1 match {
-        case "up" => p1.setPosY(p1.getPosY() - 1)
-        case "left" => p1.setPosX(p1.getPosX() - 1)
-        case "down" => p1.setPosY(p1.getPosY() + 1)
-        case "right" => p1.setPosX(p1.getPosX() + 1)
-      }
+        directionP1 match {
+          case "up" => p1.setPosY(p1.getPosY() - 1)
+          case "left" => p1.setPosX(p1.getPosX() - 1)
+          case "down" => p1.setPosY(p1.getPosY() + 1)
+          case "right" => p1.setPosX(p1.getPosX() + 1)
+        }
 
-      directionP2 match {
-        case "up" => p2.setPosY(p2.getPosY() - 1)
-        case "left" => p2.setPosX(p2.getPosX() - 1)
-        case "down" => p2.setPosY(p2.getPosY() + 1)
-        case "right" => p2.setPosX(p2.getPosX() + 1)
+        directionP2 match {
+          case "up" => p2.setPosY(p2.getPosY() - 1)
+          case "left" => p2.setPosX(p2.getPosX() - 1)
+          case "down" => p2.setPosY(p2.getPosY() + 1)
+          case "right" => p2.setPosX(p2.getPosX() + 1)
+        }
       }
     }
     else {
