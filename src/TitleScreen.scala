@@ -5,7 +5,7 @@ import java.awt.Color
 import java.awt.event.{MouseAdapter, MouseEvent}
 import javax.swing.SwingConstants
 
-object TitleScreen extends App {
+class TitleScreen {
   val display = new FunGraphics(600, 700)
 
   drawTitleImg()

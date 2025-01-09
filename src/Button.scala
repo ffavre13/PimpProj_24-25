@@ -1,4 +1,3 @@
-import TitleScreen.display
 import hevs.graphics.FunGraphics
 
 import java.awt.Color

@@ -2,6 +2,7 @@ import hevs.graphics.FunGraphics
 
 import java.awt.Color
 import java.awt.event.{KeyAdapter, KeyEvent}
+import javax.swing.SwingConstants
 
 object Game extends App {
   // Game settings
@@ -18,10 +19,13 @@ object Game extends App {
   var directionP1: String = "right" // Direction for player 1
   var directionP2: String = "left" // Direction for player 2
   var isPlaying: Boolean = true // Tells if the game is ongoing
-  var running: Boolean = true
+  var running: Boolean = false
+  var menuIsDisplayed: Boolean = true
+  var firstLaunch: Boolean = true
 
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
+  val menu: TitleScreen = new TitleScreen()
 
   /**
    * Updates the position of the players in the grid with the player objects given in parameter
@@ -86,8 +90,8 @@ object Game extends App {
       display.clear()
 
 
-      display.setColor(new Color(11,11,69))
-      display.drawFillRect(0,0,display.width,display.height)
+      display.setColor(new Color(11, 11, 69))
+      display.drawFillRect(0, 0, display.width, display.height)
 
 
       // Draw grid on display windows
@@ -146,6 +150,18 @@ object Game extends App {
     directionP2 = "left"
 
     isPlaying = true
+    firstLaunch = true
+  }
+
+  while (menuIsDisplayed) {
+    Thread.sleep(10)
+    if (menu.playButtonisPressed()) {
+      running = true
+      menuIsDisplayed = false
+    }
+    if (menu.quitButtonisPressed()) {
+      menuIsDisplayed = false
+    }
   }
 
   // Game
@@ -154,15 +170,15 @@ object Game extends App {
       display.setKeyManager(new KeyAdapter {
         override def keyPressed(e: KeyEvent): Unit = {
           e.getKeyCode match {
-            case KeyEvent.VK_W => if(directionP1 != "down") directionP1 = "up"
-            case KeyEvent.VK_A => if(directionP1 != "right") directionP1 = "left"
-            case KeyEvent.VK_S => if(directionP1 != "up") directionP1 = "down"
-            case KeyEvent.VK_D => if(directionP1 != "left") directionP1 = "right"
+            case KeyEvent.VK_W => if (directionP1 != "down") directionP1 = "up"
+            case KeyEvent.VK_A => if (directionP1 != "right") directionP1 = "left"
+            case KeyEvent.VK_S => if (directionP1 != "up") directionP1 = "down"
+            case KeyEvent.VK_D => if (directionP1 != "left") directionP1 = "right"
 
-            case KeyEvent.VK_I | KeyEvent.VK_UP => if(directionP2 != "down") directionP2 = "up"
-            case KeyEvent.VK_J | KeyEvent.VK_LEFT => if(directionP2 != "right") directionP2 = "left"
-            case KeyEvent.VK_K | KeyEvent.VK_DOWN => if(directionP2 != "up") directionP2 = "down"
-            case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if(directionP2 != "left") directionP2 = "right"
+            case KeyEvent.VK_I | KeyEvent.VK_UP => if (directionP2 != "down") directionP2 = "up"
+            case KeyEvent.VK_J | KeyEvent.VK_LEFT => if (directionP2 != "right") directionP2 = "left"
+            case KeyEvent.VK_K | KeyEvent.VK_DOWN => if (directionP2 != "up") directionP2 = "down"
+            case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if (directionP2 != "left") directionP2 = "right"
 
             case _ =>
           }
@@ -173,6 +189,15 @@ object Game extends App {
 
       if (isPlaying) {
         updateDisplay(grid, colorP1, colorP2)
+
+        if (firstLaunch) {
+          for (i <- 3 until 0 by -1) {
+            display.drawFancyString(display.width / 2, display.height / 2, i.toString, fontSize = 100, color = Color.WHITE, halign = SwingConstants.CENTER, valign = SwingConstants.CENTER)
+            Thread.sleep(1000)
+            updateDisplay(grid, colorP1, colorP2)
+          }
+          firstLaunch = false
+        }
 
         display.syncGameLogic(fps)
         Thread.sleep(speed)
