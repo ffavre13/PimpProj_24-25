@@ -5,11 +5,11 @@ import java.awt.event.{KeyAdapter, KeyEvent, KeyListener}
 
 object Game extends App {
   // Game settings
-  val dimGrid: Int = 20           // Size of the grid
-  val sizeMult: Int = 20          // Size multiplier for display
-  val fps: Int = 120                // Number of Frames per second generated
-  val speed: Int = 500
-  val showGrid: Boolean = true    // Tells if the game should render the game grid
+  val dimGrid: Int = 20 // Size of the grid
+  val sizeMult: Int = 20 // Size multiplier for display
+  val fps: Int = 120 // Number of Frames per second generated
+  val speed: Int = 500 // Speed of the game
+  val showGrid: Boolean = true // Tells if the game should render the game grid
 
   val p1: Player = new Player(0, 0) // Player 1
   val p2: Player = new Player(dimGrid - 1, dimGrid - 1) // Player 2
@@ -17,12 +17,19 @@ object Game extends App {
   val colorP2: Color = Color.BLUE // Color player 2
   var directionP1: String = "right" // Direction for player 1
   var directionP2: String = "left" // Direction for player 2
-  var gaming: Boolean = true    // Tells if the game is ongoing
+  var gaming: Boolean = true // Tells if the game is ongoing
 
-  val grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
+  var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult) // Display Windows
 
-  // Update the position of the players in the grid
+  /**
+   * Updates the position of the players in the grid with the player objects given in parameter
+   *
+   * @param player1 Player 1 object
+   * @param player2 Player 2 object
+   * @param a       Array containing current game state
+   * @return Returns an array containing the new game state
+   */
   def updateGrid(player1: Player, player2: Player, a: Array[Array[Int]]): Array[Array[Int]] = {
     val tmp: Array[Array[Int]] = a.clone()
     // Check lose conditions
@@ -39,11 +46,11 @@ object Game extends App {
       gaming = false
     }
     else if (tmp(player1.getPosY())(player1.getPosX()) == 2 || tmp(player1.getPosY())(player1.getPosX()) == 1 || tmp(player1.getPosY())(player1.getPosX()) >= 3) {
-      DialogBox.showDialog("Game over","Game over PLAYER 2 WINS")
+      DialogBox.showDialog("Game over", "Game over PLAYER 2 WINS")
       gaming = false
     }
     else if (tmp(player2.getPosY())(player2.getPosX()) == 1 || tmp(player2.getPosY())(player2.getPosX()) == 2 || tmp(player2.getPosY())(player2.getPosX()) >= 3) {
-      DialogBox.showDialog("Game over","Game over PLAYER 1 WINS")
+      DialogBox.showDialog("Game over", "Game over PLAYER 1 WINS")
       gaming = false
     }
 
@@ -59,6 +66,7 @@ object Game extends App {
 
   /**
    * Tells if the player is out of the game's bound
+   *
    * @param player Player to check
    * @return True if player is out of bounds
    */
@@ -67,7 +75,13 @@ object Game extends App {
       player.getPosY() < 0 || player.getPosY() > dimGrid - 1)
   }
 
-  // Update Display with a grid
+  /**
+   * Updates display
+   *
+   * @param a   Array containing game state
+   * @param cP1 Player 1 color to display
+   * @param cP2 Player 2 color to display
+   */
   def updateDisplay(a: Array[Array[Int]], cP1: Color, cP2: Color): Unit = {
     display.frontBuffer.synchronized {
       display.clear(Color.white)
@@ -81,6 +95,7 @@ object Game extends App {
         }
       }
 
+      // Draw players
       for (l <- a.indices) {
         for (c <- a(0).indices) {
           if (a(l)(c) == 1) {
@@ -98,6 +113,7 @@ object Game extends App {
         }
       }
     }
+
   }
 
   // Game
@@ -110,10 +126,10 @@ object Game extends App {
           case 's' => directionP1 = "down"
           case 'd' => directionP1 = "right"
 
-          case 'i' | KeyEvent.VK_UP => directionP2 = "up"
-          case 'j' | KeyEvent.VK_LEFT => directionP2 = "left"
-          case 'k' | KeyEvent.VK_DOWN => directionP2 = "down"
-          case 'l' | KeyEvent.VK_RIGHT => directionP2 = "right"
+          case 'i' => directionP2 = "up"
+          case 'j' => directionP2 = "left"
+          case 'k' => directionP2 = "down"
+          case 'l' => directionP2 = "right"
 
           case _ =>
         }
@@ -129,7 +145,7 @@ object Game extends App {
       }
     })
 
-    updateGrid(p1, p2, grid)
+    grid = updateGrid(p1, p2, grid)
 
     updateDisplay(grid, colorP1, colorP2)
 
