@@ -2,6 +2,7 @@ import hevs.graphics.FunGraphics
 
 import java.awt.{Color, Dialog}
 import java.awt.event.{KeyAdapter, KeyEvent, KeyListener}
+import javax.annotation.processing.Messager
 
 object Game extends App {
   // Game settings
@@ -11,13 +12,14 @@ object Game extends App {
   val speed: Int = 500 // Speed of the game
   val showGrid: Boolean = true // Tells if the game should render the game grid
 
-  val p1: Player = new Player(0, 0) // Player 1
-  val p2: Player = new Player(dimGrid - 1, dimGrid - 1) // Player 2
+  var p1: Player = new Player(0, 0) // Player 1
+  var p2: Player = new Player(dimGrid - 1, dimGrid - 1) // Player 2
   val colorP1: Color = Color.RED // Color player 1
   val colorP2: Color = Color.BLUE // Color player 2
   var directionP1: String = "right" // Direction for player 1
   var directionP2: String = "left" // Direction for player 2
-  var gaming: Boolean = true // Tells if the game is ongoing
+  var isPlaying: Boolean = true // Tells if the game is ongoing
+  var running: Boolean = true
 
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult) // Display Windows
@@ -35,33 +37,32 @@ object Game extends App {
     // Check lose conditions
     if (isOutOfBounds(player1) && isOutOfBounds(player2)) {
       DialogBox.showDialog("Game over", "Player 1 and 2 loose, you both hit a wall")
-      gaming = false
+      isPlaying = false
     }
     else if (isOutOfBounds(player1)) {
       DialogBox.showDialog("Game over", "Player 1 you have hit a wall. PLAYER 2 WINS")
-      gaming = false
+      isPlaying = false
     }
     else if (isOutOfBounds(player2)) {
       DialogBox.showDialog("Game over", "Player 2 you have hit a wall. PLAYER 1 WINS")
-      gaming = false
+      isPlaying = false
     }
     else if (tmp(player1.getPosY())(player1.getPosX()) == 2 || tmp(player1.getPosY())(player1.getPosX()) == 1 || tmp(player1.getPosY())(player1.getPosX()) >= 3) {
       DialogBox.showDialog("Game over", "Game over PLAYER 2 WINS")
-      gaming = false
+      isPlaying = false
     }
     else if (tmp(player2.getPosY())(player2.getPosX()) == 1 || tmp(player2.getPosY())(player2.getPosX()) == 2 || tmp(player2.getPosY())(player2.getPosX()) >= 3) {
       DialogBox.showDialog("Game over", "Game over PLAYER 1 WINS")
-      gaming = false
+      isPlaying = false
     }
 
     // Apply positions
-    if (gaming) {
+    if (isPlaying) {
       tmp(player1.getPosY())(player1.getPosX()) += 1
       tmp(player2.getPosY())(player2.getPosX()) += 2
     }
 
-
-    return tmp
+    tmp
   }
 
   /**
@@ -71,8 +72,7 @@ object Game extends App {
    * @return True if player is out of bounds
    */
   def isOutOfBounds(player: Player): Boolean = {
-    return (player.getPosX() < 0 || player.getPosX() > dimGrid - 1 ||
-      player.getPosY() < 0 || player.getPosY() > dimGrid - 1)
+    player.getPosX() < 0 || player.getPosX() > dimGrid - 1 || player.getPosY() < 0 || player.getPosY() > dimGrid - 1
   }
 
   /**
@@ -116,54 +116,72 @@ object Game extends App {
 
   }
 
+  /**
+   * Reset by default the game state
+   */
+  def resetGameState(): Unit = {
+    grid = Array.ofDim(dimGrid, dimGrid)
+    display.clear()
+
+    p1 = new Player(0, 0)
+    p2 = new Player(dimGrid - 1, dimGrid - 1)
+
+    directionP1 = "right"
+    directionP2 = "left"
+
+    isPlaying = true
+  }
+
   // Game
-  while (gaming) {
-    display.setKeyManager(new KeyAdapter {
-      override def keyPressed(e: KeyEvent): Unit = {
-        e.getKeyChar match {
-          case 'w' => directionP1 = "up"
-          case 'a' => directionP1 = "left"
-          case 's' => directionP1 = "down"
-          case 'd' => directionP1 = "right"
+  while (running) {
+    if (isPlaying) {
+      display.setKeyManager(new KeyAdapter {
+        override def keyPressed(e: KeyEvent): Unit = {
+          e.getKeyCode match {
+            case KeyEvent.VK_W => if(directionP1 != "down") directionP1 = "up"
+            case KeyEvent.VK_A => if(directionP1 != "right") directionP1 = "left"
+            case KeyEvent.VK_S => if(directionP1 != "up") directionP1 = "down"
+            case KeyEvent.VK_D => if(directionP1 != "left") directionP1 = "right"
 
-          case 'i' => directionP2 = "up"
-          case 'j' => directionP2 = "left"
-          case 'k' => directionP2 = "down"
-          case 'l' => directionP2 = "right"
+            case KeyEvent.VK_I | KeyEvent.VK_UP => if(directionP2 != "down") directionP2 = "up"
+            case KeyEvent.VK_J | KeyEvent.VK_LEFT => if(directionP2 != "right") directionP2 = "left"
+            case KeyEvent.VK_K | KeyEvent.VK_DOWN => if(directionP2 != "up") directionP2 = "down"
+            case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if(directionP2 != "left") directionP2 = "right"
 
-          case _ =>
+            case _ =>
+          }
         }
+      })
 
-        e.getKeyCode match {
-          case KeyEvent.VK_UP => directionP2 = "up"
-          case KeyEvent.VK_LEFT => directionP2 = "left"
-          case KeyEvent.VK_DOWN => directionP2 = "down"
-          case KeyEvent.VK_RIGHT => directionP2 = "right"
+      grid = updateGrid(p1, p2, grid)
 
-          case _ =>
-        }
+      updateDisplay(grid, colorP1, colorP2)
+
+      display.syncGameLogic(fps)
+      Thread.sleep(speed)
+
+      directionP1 match {
+        case "up" => p1.setPosY(p1.getPosY() - 1)
+        case "left" => p1.setPosX(p1.getPosX() - 1)
+        case "down" => p1.setPosY(p1.getPosY() + 1)
+        case "right" => p1.setPosX(p1.getPosX() + 1)
       }
-    })
 
-    grid = updateGrid(p1, p2, grid)
-
-    updateDisplay(grid, colorP1, colorP2)
-
-    display.syncGameLogic(fps)
-    Thread.sleep(speed)
-
-    directionP1 match {
-      case "up" => p1.setPosY(p1.getPosY() - 1)
-      case "left" => p1.setPosX(p1.getPosX() - 1)
-      case "down" => p1.setPosY(p1.getPosY() + 1)
-      case "right" => p1.setPosX(p1.getPosX() + 1)
+      directionP2 match {
+        case "up" => p2.setPosY(p2.getPosY() - 1)
+        case "left" => p2.setPosX(p2.getPosX() - 1)
+        case "down" => p2.setPosY(p2.getPosY() + 1)
+        case "right" => p2.setPosX(p2.getPosX() + 1)
+      }
     }
-
-    directionP2 match {
-      case "up" => p2.setPosY(p2.getPosY() - 1)
-      case "left" => p2.setPosX(p2.getPosX() - 1)
-      case "down" => p2.setPosY(p2.getPosY() + 1)
-      case "right" => p2.setPosX(p2.getPosX() + 1)
+    else {
+      val restart: Boolean = DialogBox.showDialogReplay("Game information", "Do you want to replay ?")
+      if (restart) {
+        resetGameState()
+      }
+      else {
+        running = false
+      }
     }
   }
   System.exit(0)
