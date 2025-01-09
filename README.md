@@ -5,6 +5,14 @@ A simple 2 players Tron game made in Scala.
 **For player 1 :** `WASD` to move  
 **For player 2 :** `IJKL` or `↑ ← → ↓` to move
 
+## Structure
+The project is structured as it follows :
+```
+├── 📁 `res`      # Project ressources (images, libs, ...)
+│   └── 📁 `lib`  # Contains libraries needed in order for the project to run
+└── 📁 `src`      # Scala code of the project 
+```
+
 ## TODO
 - [x] Add a head for player
 - [x] Add a replay option
