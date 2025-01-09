@@ -1,8 +1,7 @@
 import hevs.graphics.FunGraphics
 
-import java.awt.{Color, Dialog}
-import java.awt.event.{KeyAdapter, KeyEvent, KeyListener}
-import javax.annotation.processing.Messager
+import java.awt.Color
+import java.awt.event.{KeyAdapter, KeyEvent}
 
 object Game extends App {
   // Game settings
@@ -22,7 +21,7 @@ object Game extends App {
   var running: Boolean = true
 
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
-  val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult) // Display Windows
+  val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
 
   /**
    * Updates the position of the players in the grid with the player objects given in parameter
@@ -84,7 +83,12 @@ object Game extends App {
    */
   def updateDisplay(a: Array[Array[Int]], cP1: Color, cP2: Color): Unit = {
     display.frontBuffer.synchronized {
-      display.clear(Color.white)
+      display.clear()
+
+
+      display.setColor(new Color(11,11,69))
+      display.drawFillRect(0,0,display.width,display.height)
+
 
       // Draw grid on display windows
       if (showGrid) {
@@ -99,26 +103,28 @@ object Game extends App {
       for (l <- a.indices) {
         for (c <- a(0).indices) {
           if (a(l)(c) == 1) {
-            display.setColor(cP1)
             if (l == p1.getPosY() && c == p1.getPosX()) {
-              display.drawFilledCircle(c * sizeMult, l * sizeMult, sizeMult)
+              display.setColor(cP1.darker())
+              display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
             else {
-              display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+              display.setColor(cP1)
+              display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
           }
           else if (a(l)(c) == 2) {
-            display.setColor(cP2)
             if (l == p2.getPosY() && c == p2.getPosX()) {
-              display.drawFilledCircle(c * sizeMult, l * sizeMult, sizeMult)
+              display.setColor(cP2.darker())
+              display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
             else {
-              display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+              display.setColor(cP2)
+              display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
           }
           else if (a(l)(c) == 3) {
             display.setColor(Color.ORANGE)
-            display.drawCircle(c * sizeMult, l * sizeMult, sizeMult)
+            display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
           }
         }
       }
