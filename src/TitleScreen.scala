@@ -5,13 +5,12 @@ import java.awt.Color
 import java.awt.event.{MouseAdapter, MouseEvent}
 import javax.swing.SwingConstants
 
-class TitleScreen {
-  val display = new FunGraphics(600, 700)
+class TitleScreen(display: FunGraphics) {
 
   drawTitleImg()
 
-  var playButton: Button = new Button(display, 200, 430, 200, 40, "PLAY THE GAME")
-  var quitButton: Button = new Button(display, 200, 500, 200, 40, "QUIT :(")
+  var playButton: Button = new Button(display, display.width/3, 430, display.width/3, 40, "PLAY THE GAME")
+  var quitButton: Button = new Button(display, display.width/3, 500, display.width/3, 40, "QUIT :(")
 
   var playButtonPressed: Boolean = false
   var quitButtonPressed: Boolean = false

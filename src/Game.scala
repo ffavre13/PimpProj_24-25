@@ -19,13 +19,13 @@ object Game extends App {
   var directionP1: String = "right" // Direction for player 1
   var directionP2: String = "left" // Direction for player 2
   var isPlaying: Boolean = true // Tells if the game is ongoing
-  var running: Boolean = false
+  var running: Boolean = true
   var menuIsDisplayed: Boolean = true
   var firstLaunch: Boolean = true
 
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
-  val menu: TitleScreen = new TitleScreen()
+  val menu: TitleScreen = new TitleScreen(display)
 
   /**
    * Updates the position of the players in the grid with the player objects given in parameter
@@ -153,79 +153,80 @@ object Game extends App {
     firstLaunch = true
   }
 
-  while (menuIsDisplayed) {
-    Thread.sleep(10)
-    if (menu.playButtonisPressed()) {
-      running = true
-      menuIsDisplayed = false
-    }
-    if (menu.quitButtonisPressed()) {
-      menuIsDisplayed = false
-    }
-  }
-
   // Game
   while (running) {
-    if (isPlaying) {
-      display.setKeyManager(new KeyAdapter {
-        override def keyPressed(e: KeyEvent): Unit = {
-          e.getKeyCode match {
-            case KeyEvent.VK_W => if (directionP1 != "down") directionP1 = "up"
-            case KeyEvent.VK_A => if (directionP1 != "right") directionP1 = "left"
-            case KeyEvent.VK_S => if (directionP1 != "up") directionP1 = "down"
-            case KeyEvent.VK_D => if (directionP1 != "left") directionP1 = "right"
-
-            case KeyEvent.VK_I | KeyEvent.VK_UP => if (directionP2 != "down") directionP2 = "up"
-            case KeyEvent.VK_J | KeyEvent.VK_LEFT => if (directionP2 != "right") directionP2 = "left"
-            case KeyEvent.VK_K | KeyEvent.VK_DOWN => if (directionP2 != "up") directionP2 = "down"
-            case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if (directionP2 != "left") directionP2 = "right"
-
-            case _ =>
-          }
-        }
-      })
-
-      grid = updateGrid(p1, p2, grid)
-
+    if (!menuIsDisplayed) {
       if (isPlaying) {
-        updateDisplay(grid, colorP1, colorP2)
+        display.setKeyManager(new KeyAdapter {
+          override def keyPressed(e: KeyEvent): Unit = {
+            e.getKeyCode match {
+              case KeyEvent.VK_W => if (directionP1 != "down") directionP1 = "up"
+              case KeyEvent.VK_A => if (directionP1 != "right") directionP1 = "left"
+              case KeyEvent.VK_S => if (directionP1 != "up") directionP1 = "down"
+              case KeyEvent.VK_D => if (directionP1 != "left") directionP1 = "right"
 
-        if (firstLaunch) {
-          for (i <- 3 until 0 by -1) {
-            display.drawFancyString(display.width / 2, display.height / 2, i.toString, fontSize = 100, color = Color.WHITE, halign = SwingConstants.CENTER, valign = SwingConstants.CENTER)
-            Thread.sleep(1000)
-            updateDisplay(grid, colorP1, colorP2)
+              case KeyEvent.VK_I | KeyEvent.VK_UP => if (directionP2 != "down") directionP2 = "up"
+              case KeyEvent.VK_J | KeyEvent.VK_LEFT => if (directionP2 != "right") directionP2 = "left"
+              case KeyEvent.VK_K | KeyEvent.VK_DOWN => if (directionP2 != "up") directionP2 = "down"
+              case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if (directionP2 != "left") directionP2 = "right"
+
+              case _ =>
+            }
           }
-          firstLaunch = false
+        })
+
+        grid = updateGrid(p1, p2, grid)
+
+        if (isPlaying) {
+          updateDisplay(grid, colorP1, colorP2)
+
+          if (firstLaunch) {
+            for (i <- 3 until 0 by -1) {
+              display.drawFancyString(display.width / 2, display.height / 2, i.toString, fontSize = 100, color = Color.WHITE, halign = SwingConstants.CENTER, valign = SwingConstants.CENTER)
+              Thread.sleep(1000)
+              updateDisplay(grid, colorP1, colorP2)
+            }
+            firstLaunch = false
+          }
+
+          display.syncGameLogic(fps)
+          Thread.sleep(speed)
+
+          directionP1 match {
+            case "up" => p1.setPosY(p1.getPosY() - 1)
+            case "left" => p1.setPosX(p1.getPosX() - 1)
+            case "down" => p1.setPosY(p1.getPosY() + 1)
+            case "right" => p1.setPosX(p1.getPosX() + 1)
+          }
+
+          directionP2 match {
+            case "up" => p2.setPosY(p2.getPosY() - 1)
+            case "left" => p2.setPosX(p2.getPosX() - 1)
+            case "down" => p2.setPosY(p2.getPosY() + 1)
+            case "right" => p2.setPosX(p2.getPosX() + 1)
+          }
         }
-
-        display.syncGameLogic(fps)
-        Thread.sleep(speed)
-
-        directionP1 match {
-          case "up" => p1.setPosY(p1.getPosY() - 1)
-          case "left" => p1.setPosX(p1.getPosX() - 1)
-          case "down" => p1.setPosY(p1.getPosY() + 1)
-          case "right" => p1.setPosX(p1.getPosX() + 1)
+      }
+      else {
+        val restart: Boolean = DialogBox.showDialogReplay("Game information", "Do you want to replay ?")
+        if (restart) {
+          resetGameState()
         }
-
-        directionP2 match {
-          case "up" => p2.setPosY(p2.getPosY() - 1)
-          case "left" => p2.setPosX(p2.getPosX() - 1)
-          case "down" => p2.setPosY(p2.getPosY() + 1)
-          case "right" => p2.setPosX(p2.getPosX() + 1)
+        else {
+          running = false
         }
       }
     }
     else {
-      val restart: Boolean = DialogBox.showDialogReplay("Game information", "Do you want to replay ?")
-      if (restart) {
-        resetGameState()
+      Thread.sleep(10)
+      if (menu.playButtonisPressed()) {
+        menuIsDisplayed = false
       }
-      else {
+      if (menu.quitButtonisPressed()) {
         running = false
       }
     }
+
   }
   System.exit(0)
 }
