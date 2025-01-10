@@ -1,5 +1,6 @@
+package components
+
 import javax.swing.{JFrame, JOptionPane}
-import scala.Array
 
 object DialogBox {
   /**

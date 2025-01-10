@@ -1,3 +1,4 @@
+import components.{DialogBox, TitleScreen}
 import hevs.graphics.FunGraphics
 
 import java.awt.Color
@@ -19,13 +20,13 @@ object Game extends App {
   var directionP1: String = "right" // Direction for player 1
   var directionP2: String = "left" // Direction for player 2
   var isPlaying: Boolean = true // Tells if the game is ongoing
-  var running: Boolean = true
-  var menuIsDisplayed: Boolean = true
-  var firstLaunch: Boolean = true
+  var running: Boolean = true // Tells if the program still needs to be running
+  var menuIsDisplayed: Boolean = true // Tells if the title screen is displayed
+  var firstLaunch: Boolean = true //Tells if the game just started (used for the game starting countdown)
 
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
-  val menu: TitleScreen = new TitleScreen(display)
+  val menu: TitleScreen = new TitleScreen(display) // Title screen object
 
   /**
    * Updates the position of the players in the grid with the player objects given in parameter
@@ -50,11 +51,11 @@ object Game extends App {
       DialogBox.showDialog("Game over", "Player 2 you have hit a wall. PLAYER 1 WINS")
       isPlaying = false
     }
-    else if (tmp(player1.getPosY())(player1.getPosX()) == 2 || tmp(player1.getPosY())(player1.getPosX()) == 1 || tmp(player1.getPosY())(player1.getPosX()) >= 3) {
+    else if (checkPlayerCollision(tmp, player1)) {
       DialogBox.showDialog("Game over", "Game over PLAYER 2 WINS")
       isPlaying = false
     }
-    else if (tmp(player2.getPosY())(player2.getPosX()) == 1 || tmp(player2.getPosY())(player2.getPosX()) == 2 || tmp(player2.getPosY())(player2.getPosX()) >= 3) {
+    else if (checkPlayerCollision(tmp, player2)) {
       DialogBox.showDialog("Game over", "Game over PLAYER 1 WINS")
       isPlaying = false
     }
@@ -79,6 +80,17 @@ object Game extends App {
   }
 
   /**
+   * Checks if the player has encountered the other player or itself
+   *
+   * @param a Array containing game state
+   * @param p Player to check
+   * @return True if player has encountered the other player or itself
+   */
+  def checkPlayerCollision(a: Array[Array[Int]], p: Player): Boolean = {
+    a(p.getPosY())(p.getPosX()) == 2 || a(p.getPosY())(p.getPosX()) == 1 || a(p.getPosY())(p.getPosX()) >= 3
+  }
+
+  /**
    * Updates display
    *
    * @param a   Array containing game state
@@ -89,10 +101,8 @@ object Game extends App {
     display.frontBuffer.synchronized {
       display.clear()
 
-
       display.setColor(new Color(11, 11, 69))
       display.drawFillRect(0, 0, display.width, display.height)
-
 
       // Draw grid on display windows
       if (showGrid) {
@@ -182,7 +192,16 @@ object Game extends App {
 
           if (firstLaunch) {
             for (i <- 3 until 0 by -1) {
-              display.drawFancyString(display.width / 2, display.height / 2, i.toString, fontSize = 100, color = Color.WHITE, halign = SwingConstants.CENTER, valign = SwingConstants.CENTER)
+              display.drawFancyString(
+                display.width / 2,
+                display.height / 2,
+                i.toString,
+                fontFamily = "Cascadia Mono",
+                fontSize = 100,
+                color = Color.WHITE,
+                halign = SwingConstants.CENTER,
+                valign = SwingConstants.CENTER
+              )
               Thread.sleep(1000)
               updateDisplay(grid, colorP1, colorP2)
             }

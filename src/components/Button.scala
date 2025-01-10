@@ -1,3 +1,5 @@
+package components
+
 import hevs.graphics.FunGraphics
 
 import java.awt.Color

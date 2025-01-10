@@ -1,9 +1,9 @@
+package components
+
 import hevs.graphics.FunGraphics
 import hevs.graphics.utils.GraphicsBitmap
 
-import java.awt.Color
 import java.awt.event.{MouseAdapter, MouseEvent}
-import javax.swing.SwingConstants
 
 class TitleScreen(display: FunGraphics) {
 
