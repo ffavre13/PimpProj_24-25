@@ -22,7 +22,7 @@ object Game extends App {
   var isPlaying: Boolean = true // Tells if the game is ongoing
   var running: Boolean = true // Tells if the program still needs to be running
   var menuIsDisplayed: Boolean = true // Tells if the title screen is displayed
-  var firstLaunch: Boolean = true //Tells if the game just started (used for the game starting countdown)
+  var firstLaunch: Boolean = true // Tells if the game just started (used for the game starting countdown)
 
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
@@ -237,11 +237,11 @@ object Game extends App {
       }
     }
     else {
-      Thread.sleep(10)
-      if (menu.playButtonisPressed()) {
+      Thread.sleep(1) // Workaround to make the buttons work
+      if (menu.playButtonIsPressed()) {
         menuIsDisplayed = false
       }
-      if (menu.quitButtonisPressed()) {
+      if (menu.quitButtonIsPressed()) {
         running = false
       }
     }

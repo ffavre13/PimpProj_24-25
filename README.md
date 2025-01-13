@@ -8,11 +8,11 @@ A simple 2 players Tron game made in Scala.
 ## Structure
 The project is structured as it follows :
 ```
-├── 📁 `res`             # Project ressources (libs)
-│   └── 📁 `lib`         # Contains libraries needed in order for the project to run
-├── 📁 `src`             # Scala code of the project 
-│   ├── 📁 `components`  # Graphical components
-└── └── 📁 `img`         # Contains the images of the project
+├── 📁 res             # Project ressources (libs)
+│   └── 📁 lib         # Contains libraries needed in order for the project to run
+├── 📁 src             # Scala code of the project 
+│   ├── 📁 components  # Graphical components
+└── └── 📁 img         # Contains the images of the project
 ```
 
 ## TODO
@@ -28,4 +28,4 @@ The project is structured as it follows :
 - [ ] Add bonuses (Speed boost for example)
 - [ ] Add obstacles in map
 - [ ] Add Leaderboard
-- [ ] 🥚?
+- [x] 🥚?
