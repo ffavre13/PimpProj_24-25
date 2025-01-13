@@ -1,4 +1,4 @@
-import components.{DialogBox, TitleScreen}
+import components.{Audio, DialogBox, TitleScreen}
 import hevs.graphics.FunGraphics
 
 import java.awt.Color
@@ -27,6 +27,9 @@ object Game extends App {
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
   val menu: TitleScreen = new TitleScreen(display) // Title screen object
+
+  val countdownSound: Audio = new Audio("/res/audio/countdown.wav")
+
 
   /**
    * Updates the position of the players in the grid with the player objects given in parameter
@@ -191,6 +194,7 @@ object Game extends App {
           updateDisplay(grid, colorP1, colorP2)
 
           if (firstLaunch) {
+            countdownSound.play()
             for (i <- 3 until 0 by -1) {
               display.drawFancyString(
                 display.width / 2,

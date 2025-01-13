@@ -57,7 +57,7 @@ class TitleScreen(display: FunGraphics) {
    */
   def drawTitleImg(broken: Boolean = false): Unit = {
     // Title image
-    val titleImg = if (!broken) new GraphicsBitmap("/img/title.png") else new GraphicsBitmap("/img/broken_title.png")
+    val titleImg = if (!broken) new GraphicsBitmap("/res/img/title.png") else new GraphicsBitmap("/img/broken_title.png")
     val imgScale = 0.20
     var imgAngle = 0
     val imgX = display.getFrameWidth / 2

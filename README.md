@@ -12,8 +12,10 @@ The project is structured as it follows :
 │   └── 📁 lib         # Contains libraries needed in order for the project to run
 ├── 📁 src             # Scala code of the project 
 │   ├── 📁 components  # Graphical components
-└── └── 📁 img         # Contains the images of the project
-```
+│   └── 📁 res         # Ressources called in code
+│       ├── 📁 img     # Project images
+│       └── 📁 audio   # SFX and music
+└──```
 
 ## TODO
 - [x] Add a head for player
