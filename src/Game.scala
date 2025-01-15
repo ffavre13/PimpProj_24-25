@@ -10,7 +10,7 @@ object Game extends App {
   val dimGrid: Int = 50 // Size of the grid
   val sizeMult: Int = 15 // Size multiplier for display
   val fps: Int = 120 // Number of Frames per second generated
-  val speed: Int = 100 // Speed of the game
+  val speed: Int = 90 // Speed of the game (number of milliseconds between each update)
   val showGrid: Boolean = false // Tells if the game should render the game grid
 
   var p1: Player = new Player(0, 0) // Player 1
@@ -43,7 +43,7 @@ object Game extends App {
    */
   def updateGrid(player1: Player, player2: Player, a: Array[Array[Int]]): Array[Array[Int]] = {
     val tmp: Array[Array[Int]] = a.clone()
-    // Check lose conditions
+    /* == Check lose conditions == */
     if (isOutOfBounds(player1) && isOutOfBounds(player2)) {
       DialogBox.showDialog("Game over", "Player 1 and 2 loose, you both hit a wall")
       isPlaying = false
@@ -192,7 +192,7 @@ object Game extends App {
     override def mouseClicked(e: MouseEvent): Unit = {
       val event = e
 
-      if (isPlaying) {
+      if (menuIsDisplayed) {
         if (menu.playButton.checkButtonPressed(event.getX, event.getY)) {
           menuIsDisplayed = false
         }
@@ -220,6 +220,7 @@ object Game extends App {
 
   // Game
   while (running) {
+
     if (!menuIsDisplayed) {
       if (isPlaying) {
 
@@ -278,6 +279,8 @@ object Game extends App {
         }
       }
     }
+
+    Thread.sleep(10) // Workaround to make buttons work
 
   }
   System.exit(0)
