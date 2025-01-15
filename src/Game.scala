@@ -56,6 +56,10 @@ object Game extends App {
       DialogBox.showDialog("Game over", "Player 2 you have hit a wall. PLAYER 1 WINS")
       isPlaying = false
     }
+    else if (checkPlayerCollision(tmp, player1) && checkPlayerCollision(tmp, player2)) {
+      DialogBox.showDialog("Game over", "Player 1 and 2 loose, you both loose")
+      isPlaying = false
+    }
     else if (checkPlayerCollision(tmp, player1)) {
       DialogBox.showDialog("Game over", "Game over PLAYER 2 WINS")
       isPlaying = false
@@ -171,6 +175,7 @@ object Game extends App {
   // Key events
   display.setKeyManager(new KeyAdapter {
     override def keyPressed(e: KeyEvent): Unit = {
+      Thread.sleep(10)
       e.getKeyCode match {
         case KeyEvent.VK_W => if (directionP1 != "down") directionP1 = "up"
         case KeyEvent.VK_A => if (directionP1 != "right") directionP1 = "left"
