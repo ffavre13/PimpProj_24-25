@@ -29,6 +29,7 @@ object Game extends App {
   val menu: TitleScreen = new TitleScreen(display) // Title screen object
 
   val countdownSound: Audio = new Audio("/res/audio/countdown.wav")
+  var music: Option[Audio] = _
 
 
   /**
@@ -210,6 +211,8 @@ object Game extends App {
               updateDisplay(grid, colorP1, colorP2)
             }
             firstLaunch = false
+            music = Audio.getRandomMusic()
+            if (music.isDefined) music.get.play()
           }
 
           display.syncGameLogic(fps)
@@ -231,6 +234,7 @@ object Game extends App {
         }
       }
       else {
+        if (music.isDefined) music.get.stop()
         val restart: Boolean = DialogBox.showDialogReplay("Game information", "Do you want to replay ?")
         if (restart) {
           resetGameState()
