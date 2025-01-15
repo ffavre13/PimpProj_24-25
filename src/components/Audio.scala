@@ -79,9 +79,7 @@ object Audio {
 
     try {
       var musicUrl = classOf[Audio].getResource(musicsFolderPath + music)
-      println(musicUrl != null)
       if (musicUrl != null) {
-        println(musicUrl)
         return Some(new Audio(musicUrl))
       } else {
         return None

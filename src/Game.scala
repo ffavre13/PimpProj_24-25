@@ -2,7 +2,7 @@ import components.{Audio, DialogBox, TitleScreen}
 import hevs.graphics.FunGraphics
 
 import java.awt.Color
-import java.awt.event.{KeyAdapter, KeyEvent}
+import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import javax.swing.SwingConstants
 
 object Game extends App {
@@ -27,9 +27,10 @@ object Game extends App {
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
   val menu: TitleScreen = new TitleScreen(display) // Title screen object
+  var easterEggBtnCount: Int = 0 // Tells how many times we pressed the easter egg in the title screen
 
-  val countdownSound: Audio = new Audio("/res/audio/countdown.wav")
-  var music: Option[Audio] = _
+  val countdownSound: Audio = new Audio("/res/audio/countdown.wav") // Audio object for the 3-2-1 countdown
+  var music: Option[Audio] = _ // Audio object that will contain the music
 
 
   /**
@@ -167,27 +168,60 @@ object Game extends App {
     firstLaunch = true
   }
 
+  // Key events
+  display.setKeyManager(new KeyAdapter {
+    override def keyPressed(e: KeyEvent): Unit = {
+      e.getKeyCode match {
+        case KeyEvent.VK_W => if (directionP1 != "down") directionP1 = "up"
+        case KeyEvent.VK_A => if (directionP1 != "right") directionP1 = "left"
+        case KeyEvent.VK_S => if (directionP1 != "up") directionP1 = "down"
+        case KeyEvent.VK_D => if (directionP1 != "left") directionP1 = "right"
+
+        case KeyEvent.VK_I | KeyEvent.VK_UP => if (directionP2 != "down") directionP2 = "up"
+        case KeyEvent.VK_J | KeyEvent.VK_LEFT => if (directionP2 != "right") directionP2 = "left"
+        case KeyEvent.VK_K | KeyEvent.VK_DOWN => if (directionP2 != "up") directionP2 = "down"
+        case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if (directionP2 != "left") directionP2 = "right"
+
+        case _ =>
+      }
+    }
+  })
+
+  // Title screen events
+  display.addMouseListener(new MouseAdapter() {
+    override def mouseClicked(e: MouseEvent): Unit = {
+      val event = e
+
+      if (isPlaying) {
+        if (menu.playButton.checkButtonPressed(event.getX, event.getY)) {
+          menuIsDisplayed = false
+        }
+        if (menu.quitButton.checkButtonPressed(event.getX, event.getY)) {
+          running = false
+        }
+        if (menu.easterEggButton.checkButtonPressed(event.getX, event.getY)) {
+          easterEggBtnCount += 1
+
+          easterEggBtnCount match {
+            case 1 =>
+              DialogBox.showDialog(">:(", "Stop touching it, you'll break it...")
+            case 2 => {
+              menu.drawTitleImg(broken = true)
+              DialogBox.showDialog(">:(", "CONGRATS, YOU BROKE IT !")
+            }
+
+            case _ =>
+          }
+        }
+      }
+
+    }
+  })
+
   // Game
   while (running) {
     if (!menuIsDisplayed) {
       if (isPlaying) {
-        display.setKeyManager(new KeyAdapter {
-          override def keyPressed(e: KeyEvent): Unit = {
-            e.getKeyCode match {
-              case KeyEvent.VK_W => if (directionP1 != "down") directionP1 = "up"
-              case KeyEvent.VK_A => if (directionP1 != "right") directionP1 = "left"
-              case KeyEvent.VK_S => if (directionP1 != "up") directionP1 = "down"
-              case KeyEvent.VK_D => if (directionP1 != "left") directionP1 = "right"
-
-              case KeyEvent.VK_I | KeyEvent.VK_UP => if (directionP2 != "down") directionP2 = "up"
-              case KeyEvent.VK_J | KeyEvent.VK_LEFT => if (directionP2 != "right") directionP2 = "left"
-              case KeyEvent.VK_K | KeyEvent.VK_DOWN => if (directionP2 != "up") directionP2 = "down"
-              case KeyEvent.VK_L | KeyEvent.VK_RIGHT => if (directionP2 != "left") directionP2 = "right"
-
-              case _ =>
-            }
-          }
-        })
 
         grid = updateGrid(p1, p2, grid)
 
@@ -242,15 +276,6 @@ object Game extends App {
         else {
           running = false
         }
-      }
-    }
-    else {
-      Thread.sleep(1) // Workaround to make the buttons work
-      if (menu.playButtonIsPressed()) {
-        menuIsDisplayed = false
-      }
-      if (menu.quitButtonIsPressed()) {
-        running = false
       }
     }
 

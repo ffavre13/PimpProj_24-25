@@ -7,48 +7,11 @@ import java.awt.event.{MouseAdapter, MouseEvent}
 
 class TitleScreen(display: FunGraphics) {
 
-  private val playButton: Button = new Button(display, display.width/3, 430, display.width/3, 40, "PLAY THE GAME")
-  private val quitButton: Button = new Button(display, display.width/3, 500, display.width/3, 40, "QUIT :(")
-  private val easterEggButton: Button = new Button(display, 100, 50, 550, 200, visible = false)
-
-  private var playButtonPressed: Boolean = false
-  private var quitButtonPressed: Boolean = false
-  private var easterEggBtnCount: Int = 0
+  val playButton: Button = new Button(display, display.width/3, 430, display.width/3, 40, "PLAY THE GAME")
+  val quitButton: Button = new Button(display, display.width/3, 500, display.width/3, 40, "QUIT :(")
+  val easterEggButton: Button = new Button(display, 100, 50, 550, 200, visible = false)
 
   drawTitleImg()
-
-
-
-  display.addMouseListener(new MouseAdapter() {
-    override def mouseClicked(e: MouseEvent): Unit = {
-      val event = e
-
-      if (playButton.checkButtonPressed(event.getX, event.getY)) {
-        playButtonPressed = true
-      }
-      if (quitButton.checkButtonPressed(event.getX, event.getY)) {
-        quitButtonPressed = true
-      }
-      if (easterEggButton.checkButtonPressed(event.getX, event.getY)) {
-        easterEggBtnCount += 1
-
-        easterEggBtnCount match {
-          case 1 =>
-            DialogBox.showDialog(">:(", "Stop touching it, you'll break it...")
-          case 2 => {
-            drawTitleImg(broken = true)
-            DialogBox.showDialog(">:(", "CONGRATS, YOU BROKE IT !")
-          }
-
-          case _ =>
-        }
-      }
-
-    }
-  })
-
-  def playButtonIsPressed(): Boolean = playButtonPressed
-  def quitButtonIsPressed(): Boolean = quitButtonPressed
 
   /**
    * Draws the AWESOME title image
