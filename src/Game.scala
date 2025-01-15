@@ -5,6 +5,9 @@ import java.awt.Color
 import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import javax.swing.SwingConstants
 
+/**
+ * Starting point of the project. Launch this class to play the game.
+ */
 object Game extends App {
   // Game settings
   val dimGrid: Int = 50 // Size of the grid
@@ -13,6 +16,7 @@ object Game extends App {
   val speed: Int = 90 // Speed of the game (number of milliseconds between each update)
   val showGrid: Boolean = false // Tells if the game should render the game grid
 
+  // Game states
   var p1: Player = new Player(0, 0) // Player 1
   var p2: Player = new Player(dimGrid - 1, dimGrid - 1) // Player 2
   val colorP1: Color = Color.RED // Color player 1
@@ -23,12 +27,14 @@ object Game extends App {
   var running: Boolean = true // Tells if the program still needs to be running
   var menuIsDisplayed: Boolean = true // Tells if the title screen is displayed
   var firstLaunch: Boolean = true // Tells if the game just started (used for the game starting countdown)
+  var easterEggBtnCount: Int = 0 // Tells how many times we pressed the easter egg in the title screen
 
+  // Graphical components
   var grid: Array[Array[Int]] = Array.ofDim(dimGrid, dimGrid) // Grid for the game
   val display: FunGraphics = new FunGraphics(dimGrid * sizeMult, dimGrid * sizeMult, "Tron Game", true) // Display Windows
   val menu: TitleScreen = new TitleScreen(display) // Title screen object
-  var easterEggBtnCount: Int = 0 // Tells how many times we pressed the easter egg in the title screen
 
+  // Audio components
   val countdownSound: Audio = new Audio("/res/audio/countdown.wav") // Audio object for the 3-2-1 countdown
   var music: Option[Audio] = _ // Audio object that will contain the music
 
@@ -44,28 +50,34 @@ object Game extends App {
   def updateGrid(player1: Player, player2: Player, a: Array[Array[Int]]): Array[Array[Int]] = {
     val tmp: Array[Array[Int]] = a.clone()
     /* == Check lose conditions == */
+    // Both hit a wall
     if (isOutOfBounds(player1) && isOutOfBounds(player2)) {
-      DialogBox.showDialog("Game over", "Player 1 and 2 loose, you both hit a wall")
+      DialogBox.showDialog("Game over", "It's a tie !")
       isPlaying = false
     }
+    // Checks if player 1 has hit a wall
     else if (isOutOfBounds(player1)) {
-      DialogBox.showDialog("Game over", "Player 1 you have hit a wall. PLAYER 2 WINS")
+      DialogBox.showDialog("Game over", "Player 2 wins !")
       isPlaying = false
     }
+    // Checks if player 2 has hit a wall
     else if (isOutOfBounds(player2)) {
-      DialogBox.showDialog("Game over", "Player 2 you have hit a wall. PLAYER 1 WINS")
+      DialogBox.showDialog("Game over", "Player 1 wins !")
       isPlaying = false
     }
+    // Checks if the two players hit each other
     else if (checkPlayerCollision(tmp, player1) && checkPlayerCollision(tmp, player2)) {
-      DialogBox.showDialog("Game over", "Player 1 and 2 loose, you both loose")
+      DialogBox.showDialog("Game over", "It's a tie !")
       isPlaying = false
     }
+    // Checks if player 1 has hit itself or the other player
     else if (checkPlayerCollision(tmp, player1)) {
-      DialogBox.showDialog("Game over", "Game over PLAYER 2 WINS")
+      DialogBox.showDialog("Game over", "Player 2 wins !")
       isPlaying = false
     }
+    // Checks if player 2 has hit itself or the other player
     else if (checkPlayerCollision(tmp, player2)) {
-      DialogBox.showDialog("Game over", "Game over PLAYER 1 WINS")
+      DialogBox.showDialog("Game over", "Player 1 wins !")
       isPlaying = false
     }
 
@@ -107,6 +119,7 @@ object Game extends App {
    * @param cP2 Player 2 color to display
    */
   def updateDisplay(a: Array[Array[Int]], cP1: Color, cP2: Color): Unit = {
+    // Using .synchronized avoids screen artifacts
     display.frontBuffer.synchronized {
       display.clear()
 
@@ -125,27 +138,31 @@ object Game extends App {
       // Draw players
       for (l <- a.indices) {
         for (c <- a(0).indices) {
-          if (a(l)(c) == 1) {
+          if (a(l)(c) == 1) { // Checks if there is player one here
             if (l == p1.getPosY() && c == p1.getPosX()) {
+              // Draws head of the player
               display.setColor(cP1.darker())
               display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
             else {
+              // Draws the player's trail
               display.setColor(cP1)
               display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
           }
-          else if (a(l)(c) == 2) {
+          else if (a(l)(c) == 2) { // Checks if there is player two here
             if (l == p2.getPosY() && c == p2.getPosX()) {
+              // Draws head of the player
               display.setColor(cP2.darker())
               display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
             else {
+              // Draws the player's trail
               display.setColor(cP2)
               display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
             }
           }
-          else if (a(l)(c) == 3) {
+          else if (a(l)(c) == 3) { // Checks if the two players cross each other
             display.setColor(Color.ORANGE)
             display.drawFillRect(c * sizeMult, l * sizeMult, sizeMult, sizeMult)
           }
@@ -235,6 +252,7 @@ object Game extends App {
           updateDisplay(grid, colorP1, colorP2)
 
           if (firstLaunch) {
+            // Starts the 3-2-1 countdown on the start of the game
             countdownSound.play()
             for (i <- 3 until 0 by -1) {
               display.drawFancyString(

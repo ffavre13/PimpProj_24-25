@@ -3,7 +3,8 @@ A simple 2 players Tron game made in Scala.
 The player needs to avoid touching obstacles while blocking the other.
 
 ## Screenshots
-![ingame.png](res%2Fimg%2Fingame.png) ![imgame_2.png](res%2Fimg%2Fimgame_2.png)
+<img src="res%2Fimg%2Fingame.png" width="49%">
+<img src="res%2Fimg%2Fingame_2.png" width="49%">
 
 ## Structure
 The project is structured as it follows :
@@ -12,11 +13,11 @@ The project is structured as it follows :
 ├── 📁 res             # Project ressources (libs)
 │   └── 📁 lib         # Contains libraries needed in order for the project to run
 ├── 📁 src             # Scala code of the project 
+│   ├── 📄 Game.scala  # Main scala file. Launch the project from here
 │   ├── 📁 components  # Graphical components
 │   └── 📁 res         # Ressources called in code
 │       ├── 📁 img     # Project images
-│       └── 📁 audio   # SFX and music
-└──
+└──     └── 📁 audio   # SFX and music
 ```
 
 ## Controls
@@ -30,7 +31,7 @@ If you touch the other's head, a yellow square will appear. That means that the 
 **Using IntelliJ Community :**
 1. Clone the repository
 2. Set up your JDK and Scala SDK
-3. If the FunGraphics lib isn't imported correctly, import it by right clicking   
+3. If the FunGraphics lib isn't imported correctly, import it by right-clicking   
    on the `res/lib/fungraphics-1.5.15.jar` file and pressing `Add as library` button.
 4. Launch the `src/Game.scala` file.
 5. Enjoy ! :smile:

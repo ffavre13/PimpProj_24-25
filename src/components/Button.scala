@@ -1,7 +1,6 @@
 package components
 
 import hevs.graphics.FunGraphics
-
 import java.awt.Color
 import javax.swing.SwingConstants
 
@@ -35,6 +34,13 @@ class Button(display: FunGraphics, x: Int, y: Int, width: Int = 300, height: Int
     )
   }
 
+  /**
+   * Checks if the button is pressed.
+   *
+   * @param mouseX X position of the mouse
+   * @param mouseY Y position of the mouse
+   * @return True if the button has been pressed
+   */
   def checkButtonPressed(mouseX: Int, mouseY: Int): Boolean =
     mouseX > x && mouseX < x + width &&
       mouseY > y && mouseY < y + height

@@ -1,7 +1,10 @@
 package components
 
-import javax.swing.{JButton, JFrame, JOptionPane}
+import javax.swing.{JFrame, JOptionPane}
 
+/**
+ * Object containing functions to display DialogBoxes
+ */
 object DialogBox {
   /**
    * Shows a dialog using JOptionPane object

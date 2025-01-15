@@ -1,13 +1,15 @@
 package components
+
 import java.net.URL
 import javax.sound.sampled.{AudioSystem, Clip}
 import scala.util.Random
 
 /**
  * Class representing an Audio file. Only accepts `.wav` files.
+ *
  * @param url java.net.URL object pointing to the `.wav` file
  */
-class Audio (url : URL) {
+class Audio(url: URL) {
   var audioClip: Clip = _
 
   try {
@@ -22,6 +24,7 @@ class Audio (url : URL) {
 
   /**
    * Class representing an Audio file. Only accepts `.wav` files.
+   *
    * @param path Path pointing to the `.wav` file, relative to the `/src` folder.
    */
   def this(path: String) = {
@@ -55,6 +58,7 @@ class Audio (url : URL) {
         e.printStackTrace()
     }
   }
+
 }
 
 /**
@@ -71,6 +75,7 @@ object Audio {
 
   /**
    * Gets a random `.wav` music file from the `/res/audio/music` folder
+   *
    * @return If a music has been found, returns Some containing an Audio object
    */
   def getRandomMusic(): Option[Audio] = {
